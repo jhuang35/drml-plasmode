@@ -7,6 +7,29 @@ Xiang Meng 2021.06.11
 
 [![DOI](https://zenodo.org/badge/373040701.svg)](https://zenodo.org/badge/latestdoi/373040701)
 
+---
+
+## How to use the app?
+1. Clone [the folder](https://github.com/mengeks/drml-plasmode/tree/master/REFINE2) on your local machine  
+2. Convert your data set as a CSV file. Make sure to name the outcome as `Y` and the binary treatment as `A`  
+3. Make sure you installed the package **Shiny** in R  
+4. In R session, run `shiny::runApp(PATH)`, where `PATH` is the path of the folder  
+   - Example: `shiny::runApp("~/Desktop/HuangGroup/cvtmle_plasmode/Code/REFINE2")`  
+5. Set the “Path of the data” to your data path  
+6. Set 4 models and other parameters  
+   - Models should be in the format of R formula: https://stat.ethz.ch/R-manual/R-devel/library/stats/html/formula.html  
+7. Click the **Run** button  
+
+### Demo Screenshot
+![REFINE2 Screenshot](REFINE2/REFINE2-Screenshot.png)
+
+
+⚠️ **Note:** At present, the app has been primarily tested on **macOS (OSX)**. Some users may encounter issues running it on Windows, potentially related to parallelization. We welcome feedback or pull requests to improve cross-platform support.
+
+
+---
+
+
 ## 1. Code Structure
 * [2020309-Plasmode_Sim_CV-TMLE.R](https://github.com/mengeks/drml-plasmode/blob/master/Code/2020309-Plasmode_Sim_CV-TMLE.R): Master code to first generate dataset and then produce estimation. It has dependencies on all other codes. 
 * [20200803-Sims-Function.R](https://github.com/mengeks/drml-plasmode/blob/master/Code/20200803-Sims-Function.R): Code to generate simulation dataset and plasmode dataset
@@ -50,14 +73,3 @@ REFINE2 automatically installs required dependencies when first launched. Key pa
 - `table1` - Descriptive statistics
 
 All dependencies are checked and installed automatically on first run.
-
-How to use the app?
-1.	Clone [the folder](https://github.com/mengeks/drml-plasmode/tree/master/REFINE2) on your local machine
-2.	Convert your data set as a CSV file. Make sure to name the outcome as Y and the binary treatment as A
-3.	Make sure you installed the package “Shiny” in R
-4.	In R session, run shiny::runApp(PATH), where PATH is the path of the folder
- Eg: shiny::runApp("~/Desktop/HuangGroup/cvtmle_plasmode/Code/REFINE2")
-4.	Set the “Path of the data” to your data path
-5.	Set 4 models and other parameters
-  Models should in format of R formula: https://stat.ethz.ch/R-manual/R-devel/library/stats/html/formula.html
-6.	Click the “Run” button

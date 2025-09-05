@@ -35,15 +35,15 @@ fluidPage(
     mainPanel(
       textOutput("exp.Form"),textOutput("out.Form"),textOutput("exp.Form.est"),textOutput("out.Form.est"),
       htmlOutput("res.text.1"),htmlOutput("res.text.2"),htmlOutput("res.text.3"),
-      plotOutput("plot")
+      plotOutput("plot"), tableOutput('table')
     )
-  ),
-  fluidRow(
-    column(12,
-           tableOutput('table')
-    )
-  )
+  ) #,
+  # fluidRow(
+  #   column(12,
+  #          tableOutput('table')
+  #   )
+  # )
 )
-# shiny::runApp("~/Desktop/HuangGroup/REFINE2")
+# shiny::runApp("~/Desktop/HuangGroup/drml-plasmode/REFINE2")
 # rsconnect::deployApp()
 # rsconnect::configureApp("shinyapp", size="xxlarge")

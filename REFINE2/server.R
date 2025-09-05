@@ -8,7 +8,7 @@ list.of.packages <- c("shiny","mgcv","nlme","glm2","polspline",  "doRNG","doPara
                       "here",
                       "glmnet",
                       'arm', 'lme4', 'twang', 'gbm', 'latticeExtra', 'epiDisplay' # Plasmode dependencies
-                      )
+)
 
 install.packages(list.of.packages[which(
   sapply(list.of.packages, function(x) {nzchar(system.file(package = x))})==F
@@ -272,47 +272,51 @@ function(input, output) {
       boot1
     })
     
-    summaryTable <- reactive({
-      
-      summarise.res(boot1=boot1.val(), Effect_Size=Effect_Size)
+    res_summary <- reactive({
+      summarise.res(boot1 = boot1.val(), Effect_Size = Effect_Size)
     })
     
     output$table <- renderTable({
-      summaryTable()
+      res_summary()
     })
+    
     output$plot <- renderPlot({
-      # give.summary.res(res.path, "med_bias")
-      summarise.plot(boot1=boot1.val(), Effect_Size=Effect_Size)
+      summarise.plot(boot1 = boot1.val(), Effect_Size = Effect_Size)
     })
+    
     output$res.text.1 <- renderText({
-      tbl <- summaryTable()
-      tbl <- round(tbl[,2:ncol(tbl)],3)
+      tbl <- res_summary()
+      tbl <- round(tbl[, 2:ncol(tbl)], 3)
       
       paste0("<p> <b>EMPIRICAL RESULTS:</b> Using <b>", est.mtd(),"</b> on the <b>OBSERVED</b> data, 
-       we estimate an average treatment effect of <b>", round(ATE.one.time,3),  "</b> with a 95% confidence interval of <b>(",
-             round(ATE.one.time-1.96*SE.one.time,3),",",round(ATE.one.time+1.96*SE.one.time,3),")</b>. 
-      This is an unbiased estimate of the ATE if standard causal inference assumptions
-             are fulfilled (consistency, exchangeability, positivity, and correct model).</p>")
+   we estimate an average treatment effect of <b>", round(ATE.one.time,3),  "</b> with a 95% confidence interval of <b>(",
+             round(ATE.one.time-1.96*SE.one.time,3),", ",round(ATE.one.time+1.96*SE.one.time,3),")</b>. 
+  This is an unbiased estimate of the ATE if standard causal inference assumptions
+         are fulfilled (consistency, exchangeability, positivity, and correct model).</p>")
     })
+    
     output$res.text.2 <- renderText({
-      tbl <- summaryTable()
-      tbl <- round(tbl[,2:ncol(tbl)],3)
-      paste0("\n", "<p> <b>SIMULATION FINDINGS:</b> If data-adaptive (machine learning) algorithms are used to improve model specification, 
-             there must also be no practical positivity violations across covariates and sample sizes must be large enough 
-             for bias convergence. This will vary by data structure and setting. </p>")
-    })
-    output$res.text.3 <- renderText({
-      tbl <- summaryTable()
-      tbl <- round(tbl[,2:ncol(tbl)],3)
-      paste0("<p> Thus, we used the observed data to conduct <b>",input$obs,"</b> plasmode simulations 
-      based on the user-provided-PS and outcome SIMULATION models while fixing the ATE to a theoretical true value of 
-      <b>",round(Effect_Size,3) ,"</b> (solid line). Applying the user-provided- ESTIMATION models results in a 
-      estimated median ATE of <b>",tbl$med_ATE,"</b> , corresponding to a relative bias 
-      of <b>", round((tbl$med_ATE-Effect_Size),2), "</b>. Corresponding confidence intervals covered
-      the true ATE in <b>", round(tbl$coverage*100,2) ,"%</b> of simulations.
-             This performance should be compared to other estimation methods. </p>")
+      tbl <- res_summary()
+      tbl <- round(tbl[, 2:ncol(tbl)], 3)
       
+      paste0("\n", "<p> <b>SIMULATION FINDINGS:</b> If data-adaptive (machine learning) algorithms are used to improve model specification, 
+         there must also be no practical positivity violations across covariates and sample sizes must be large enough 
+         for bias convergence. This will vary by data structure and setting. </p>")
     })
+    
+    output$res.text.3 <- renderText({
+      tbl <- res_summary()
+      tbl <- round(tbl[, 2:ncol(tbl)], 3)
+      
+      paste0("<p> Thus, we used the observed data to conduct <b>",input$obs,"</b> plasmode simulations 
+  based on the user-provided-PS and outcome SIMULATION models while fixing the ATE to a theoretical true value of 
+  <b>", round(Effect_Size,3), "</b> (solid line). Applying the user-provided- ESTIMATION models results in a 
+  estimated median ATE of <b>", tbl$med_ATE, "</b>, corresponding to a relative bias 
+  of <b>", round((tbl$med_ATE-Effect_Size),2), "</b>. Corresponding confidence intervals covered
+  the true ATE in <b>", round(tbl$coverage*100,2) ,"%</b> of simulations.
+         This performance should be compared to other estimation methods. </p>")
+    })
+    
   })
   
 }

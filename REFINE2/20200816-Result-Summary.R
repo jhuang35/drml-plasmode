@@ -30,17 +30,17 @@ summarise.res <- function(boot1, wrt="all", Effect_Size=6.6){
   sim_res <- sim_corr1 %>% group_by(TYPE) %>%
     summarize(
       b = length(ATE),
-      mu_ATE = mean(ATE),
-      mcse_ATE = sd(ATE)/sqrt(n()),
+      mean_ATE = mean(ATE),
+      mcse_mean_ATE = sd(ATE)/sqrt(n()),
       
-      mu_SE = mean(SE),
+      mean_SE = mean(SE),
       mcse_SE = sd(SE)/sqrt(n()),
       
-      mu_bias = mean(bias),
+      mean_bias = mean(bias),
       mcse_bias = sd(bias)/sqrt(n()),
       
       var = var(ATE),
-      MSE = var + mu_bias^2,
+      MSE = var + mean_bias^2,
       mcse_MSE = sd((ATE - Effect_Size)^2) / sqrt(n()),
       
       coverage = mean(lb <= Effect_Size & ub >= Effect_Size),
