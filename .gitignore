@@ -6,6 +6,8 @@ SelfReading/
 REFINE2/All_R_Code.txt
 REFINE2/.DS_Store
 Code/.DS_Store
-.DS_Store
+*.DS_Store
+*.Rhistory
+
 REFINE2/All_R_Code.txt
 Data/
