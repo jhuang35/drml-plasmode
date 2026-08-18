@@ -313,22 +313,61 @@ function(input, output, session) {
     
     res_summary <- reactive({
       tryCatch({
-        summarise.res(boot1 = boot1.val(), Effect_Size = Effect_Size)
+        result <- summarise.res(boot1 = boot1.val(), Effect_Size = Effect_Size)
+
+        # Ensure med_ATE column exists with consistent naming
+        if (!"med_ATE" %in% colnames(result)) {
+          if ("median_ATE" %in% colnames(result)) {
+            # Rename if different column name is used
+            colnames(result)[colnames(result) == "median_ATE"] <- "med_ATE"
+          } else {
+            # Calculate med_ATE if missing entirely
+            boot_data <- boot1.val()
+
+            if (length(boot_data) > 0) {
+              # More robust ATE extraction
+              ate_values <- tryCatch({
+                sapply(boot_data, function(x) {
+                  if (is.data.frame(x) && "ATE" %in% colnames(x)) {
+                    return(as.numeric(x[1, "ATE"]))
+                  } else if (is.matrix(x) && ncol(x) >= 1) {
+                    return(as.numeric(x[1, 1]))  # First column, first row
+                  } else {
+                    return(NA)
+                  }
+                })
+              }, error = function(e) {
+                return(rep(NA, length(boot_data)))
+              })
+
+              result$med_ATE <- median(ate_values, na.rm = TRUE)
+            } else {
+              result$med_ATE <- NA
+            }
+          }
+        }
+
+        return(result)
+
       }, error = function(e) {
         cat("Error in summarise.res:", e$message, "\n")
         # Return a simple fallback summary if the function fails
         boot_data <- boot1.val()
         if (length(boot_data) > 0) {
           ate_values <- sapply(boot_data, function(x) x[1, "ATE"])
-          data.frame(
+          result <- data.frame(
             Method = est.mtd(),
             med_ATE = median(ate_values, na.rm = TRUE),
             mean_ATE = mean(ate_values, na.rm = TRUE),
             coverage = NA,
             bias = median(ate_values, na.rm = TRUE) - Effect_Size
           )
+          cat("Used fallback summary with med_ATE\n")
+          return(result)
         } else {
-          data.frame(Method = est.mtd(), med_ATE = NA, mean_ATE = NA, coverage = NA, bias = NA)
+          result <- data.frame(Method = est.mtd(), med_ATE = NA, mean_ATE = NA, coverage = NA, bias = NA)
+          cat("Used fallback summary with NA values\n")
+          return(result)
         }
       })
     })
@@ -363,12 +402,20 @@ function(input, output, session) {
     
     output$res.text.3 <- renderText({
       tbl <- res_summary()
+      
+      # Check if med_ATE exists before accessing
+      if (!"med_ATE" %in% colnames(tbl)) {
+        med_ate_text <- "NA"
+      } else {
+        med_ate_text <- as.character(round(tbl$med_ATE, 3))
+      }
+      
       tbl <- round(tbl[, 2:ncol(tbl)], 3)
       
       paste0("<p> Thus, we used the observed data to conduct <b>",input$obs,"</b> plasmode simulations 
   based on the user-provided-PS and outcome SIMULATION models while fixing the ATE to a theoretical true value of 
   <b>", round(Effect_Size,3), "</b> (solid line). Applying the user-provided- ESTIMATION models results in a 
-  estimated median ATE of <b>", tbl$med_ATE, "</b>, corresponding to a relative bias 
+  estimated median ATE of <b>", med_ate_text, "</b>, corresponding to a relative bias 
   of <b>", round((tbl$med_ATE-Effect_Size),2), "</b>. Corresponding confidence intervals covered
   the true ATE in <b>", round(tbl$coverage*100,2) ,"%</b> of simulations.
          This performance should be compared to other estimation methods. </p>")
