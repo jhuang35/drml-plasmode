@@ -24,7 +24,7 @@ Xiang Meng 2021.06.11
 ![REFINE2 Screenshot](REFINE2/REFINE2-Screenshot.png)
 
 
-⚠️ **Note:** At present, the app has been primarily tested on **macOS (OSX)**. Some users may encounter issues running it on Windows, potentially related to parallelization. We welcome feedback or pull requests to improve cross-platform support.
+⚠️ **Note (Updated Aug 2026):** The app has been primarily tested on **macOS (OSX)**, however it should also be fully functional on PC/Windows thanks to fixes proposed by @sbresnahan. If Windows users are still encountering issues, please let us know!
 
 
 ---
